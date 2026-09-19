@@ -152,6 +152,7 @@ Several folders contain optional materials as a bonus for interested readers:
   - [Python Setup Tips](setup/01_optional-python-setup-preferences)
   - [Installing Python Packages and Libraries Used in This Book](setup/02_installing-python-libraries)
   - [Docker Environment Setup Guide](setup/03_optional-docker-environment)
+  - [Using an AMD GPU (ROCm) Instead of NVIDIA/CUDA](setup/01_optional-python-setup-preferences/rocm-setup.md)
 
 - **Chapter 2: Working With Text Data**
   - [Byte Pair Encoding (BPE) Tokenizer From Scratch](ch02/05_bpe-from-scratch/bpe-from-scratch-simple.ipynb)

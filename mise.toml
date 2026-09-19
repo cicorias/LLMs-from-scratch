@@ -1,0 +1,52 @@
+
+# Tasks for switching between the two project environments.
+#
+#   .venv       default: PyPI PyTorch (CPU/NVIDIA CUDA) + TensorFlow
+#   .venv-rocm  AMD GPU: ROCm PyTorch from AMD's wheel index, without TensorFlow
+#
+# Both environments come from this repository's single pyproject.toml and
+# uv.lock; only the target directory differs (UV_PROJECT_ENVIRONMENT).
+# TensorFlow is deliberately left out of the ROCm environment because it and
+# ROCm's PyTorch stack each bundle their own LLVM and abort when loaded into
+# the same process. See
+# setup/01_optional-python-setup-preferences/rocm-setup.md
+
+[tools]
+uv = "latest"
+
+[env]
+ROCM_VENV = ".venv-rocm"
+
+[tasks.sync]
+description = "Install the default environment (.venv): CPU/CUDA PyTorch + TensorFlow"
+run = "uv sync --dev"
+
+[tasks."sync:rocm"]
+description = "Install the AMD GPU environment (.venv-rocm): ROCm PyTorch, no TensorFlow"
+run = "UV_PROJECT_ENVIRONMENT=$ROCM_VENV uv sync --dev --extra rocm --no-install-package tensorflow-cpu"
+
+[tasks.rocm]
+description = "Run a command in the AMD GPU environment, e.g. `mise run rocm python train.py`"
+run = "UV_PROJECT_ENVIRONMENT=$ROCM_VENV uv run --no-sync --"
+
+[tasks."rocm:check"]
+description = "Preflight-check the AMD GPU/driver, then verify PyTorch sees it"
+run = [
+    "uv run --no-sync python scripts/detect_rocm_gpu.py",
+    "UV_PROJECT_ENVIRONMENT=$ROCM_VENV uv run --no-sync python -c \"import torch; print(torch.__version__, torch.cuda.is_available(), torch.cuda.get_device_name(0))\"",
+]
+
+[tasks."rocm:reset"]
+description = "Tear down the ROCm setup (see scripts/reset_rocm_setup.sh)"
+run = "scripts/reset_rocm_setup.sh"
+
+[tasks.kernels]
+description = "Register both environments as Jupyter kernels for notebooks/VS Code"
+run = [
+    "uv run --no-sync python -m ipykernel install --user --name llms-cpu --display-name 'LLMs (CPU/CUDA + TF)'",
+    "UV_PROJECT_ENVIRONMENT=$ROCM_VENV uv run --no-sync python -m ipykernel install --user --name llms-rocm --display-name 'LLMs (AMD ROCm)'",
+]
+
+[tasks."gpt2:export"]
+description = "Export OpenAI GPT-2 weights to a TensorFlow-free .npz (run in the default env)"
+run = "uv run --no-sync python scripts/export_gpt2_params.py"

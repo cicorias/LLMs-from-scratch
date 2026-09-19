@@ -45,6 +45,13 @@ If you don't have Python set up on your machine yet, I have written about my per
 The *Using DevContainers* section below outlines an alternative approach for installing project dependencies on your machine.
 
 &nbsp;
+## Using an AMD GPU (ROCm)
+
+The default installation provides a PyTorch build for CPU, NVIDIA (CUDA), or Apple Silicon (MPS). If you have an AMD GPU on Linux, PyTorch can use it via ROCm, which is available as an opt-in `rocm` extra in the `pyproject.toml` file:
+
+- [01_optional-python-setup-preferences/rocm-setup.md](./01_optional-python-setup-preferences/rocm-setup.md)
+
+&nbsp;
 
 ## Using Docker DevContainers
 

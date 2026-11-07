@@ -37,7 +37,7 @@ dependencies = [
 # two variants independently -- otherwise the ROCm pins would leak into the
 # default `uv sync` on Linux.
 cuda = [
-    "torch>=2.2.2 ; sys_platform == 'linux' and platform_machine != 'aarch64' and python_full_version < '3.14'",
+    "torch>=2.6.0 ; sys_platform == 'linux' and platform_machine != 'aarch64' and python_full_version < '3.14'",
 ]
 # Opt-in accelerator selection for AMD GPUs (ROCm), using AMD's own wheel
 # index. uv cannot auto-detect which GPU vendor is installed, so this must

@@ -72,13 +72,13 @@ So, based on the results above, we can see that if we have a FFN with an input/o
 
 Now, if we use an MoE layer with roughly the same number of total parameters (~308M), with 8 experts where 2 experts are active, only ~77M parameters are active in each forward pass. 
 
-Moreover, at a constant number of experts, the more experts we have, the lower the number of active parameters becomes, and the greater the "savings":
+Moreover, if we keep the total parameter count roughly constant and activate the same number of experts per token, increasing the number of experts reduces the number of active parameters. The plot below uses eight active experts per token, so it starts at eight experts.
 
 &nbsp;
 
 &nbsp;
 
-<img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/moe-memory/2.webp" alt="SWA" width="500px" />
+<img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/moe-memory/2.webp?1" alt="Dense and MoE parameter counts with eight active experts per token" width="500px" />
 
 
 
@@ -91,7 +91,8 @@ uv run plot_memory_estimates_moe.py \
     --emb_dim 7168 \
     --hidden_dim 28672 \
     --ffn_type swiglu \
-    --top_k 8
+    --top_k 8 \
+    --save ffn_vs_moe.png
 ```
 
 
@@ -124,7 +125,7 @@ Time: 25.13 sec
 Max memory allocated: 11.47 GB
 ```
 
-For a fair comparison with an MoE, we have to shrink the expert size. E.g., of we use 32 experts, we have to set `--hidden_dim 32768/32`:
+For a fair comparison with an MoE, we have to shrink the expert size. E.g., if we use 32 experts, we have to set `--hidden_dim 32768/32`:
 
 
 ```bash
@@ -154,7 +155,7 @@ Overall generation still peaks around 11.5 GB of GPU memory in both cases, since
 
 Either way, we can see the trade-off here where MoE reduces the FFN memory by about 4-5× while roughly doubling the feed-forward compute time.
 
-Note that if we processed more tokens at one, e.g., with a batch size larger than 1 (here we don't have batches due to code simplicity), the savings would be more pronounced.
+Note that if we processed more tokens at once, e.g., with a batch size larger than 1 (here we don't have batches due to code simplicity), the savings would be more pronounced.
 
 
 
